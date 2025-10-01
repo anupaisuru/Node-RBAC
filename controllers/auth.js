@@ -41,7 +41,7 @@ const register = async (req, res, next) => {
   }
 };
 
-const login = async (req, res) => {
+const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
@@ -77,7 +77,7 @@ const login = async (req, res) => {
 
     // Set cookies for access and refresh tokens
     res.cookie("userAccessToken", accessToken, {
-      maxAge: 60000 * 60 * 60 * 24 * 7, // 7 days
+      maxAge: 1000 * 60 * 5, // 5 minutes
       httpOnly: true,
       secure: true,
       sameSite: "strict",
@@ -96,7 +96,7 @@ const login = async (req, res) => {
   }
 };
 
-const refreshToken = async (req, res) => {
+const refreshToken = async (req, res, next) => {
   try {
     let refreshToken = req.cookies.userRefreshToken;
 
@@ -134,20 +134,20 @@ const refreshToken = async (req, res) => {
   }
 };
 
-const logOut = async (req, res) => {
+const logOut = async (req, res, next) => {
   try {
     res.cookie("userAccessToken", "", {
       httpOnly: false,
       secure: false,
       sameSite: "Strict",
-      expires: new Date(0), // Set the expiration date to a date in the past
+      expires: new Date(0),
     });
 
     res.cookie("userRefreshToken", "", {
       httpOnly: true,
       secure: false,
       sameSite: "Strict",
-      expires: new Date(0), // Set the expiration date to a date in the past
+      expires: new Date(0),
     });
 
     return res.status(200).json({ message: "Logout successful" });
